@@ -52,7 +52,15 @@ class SafetyScreen extends StatelessWidget {
     );
   }
 
-  ServiceButtonsRow() {}
+  Widget ServiceButtonsRow() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        ServiceButton(icon: Icons.sos, label: 'SOS alert'),
+        ServiceButton(icon: Icons.call, label: 'Helpline'),
+      ],
+    );
+  }
 }
 
 class ShieldCard extends StatelessWidget {
@@ -175,7 +183,31 @@ class SafetyScoreCard extends StatelessWidget {
   }
 }
 
-class EmergencyContacts extends StatelessWidget {
+class Contact {
+  String name;
+  String phone;
+  String email;
+
+  Contact({required this.name, required this.phone, required this.email});
+}
+
+class EmergencyContacts extends StatefulWidget {
+  @override
+  _EmergencyContactsState createState() => _EmergencyContactsState();
+}
+
+class _EmergencyContactsState extends State<EmergencyContacts> {
+  List<Contact> contacts = [
+    Contact(name: 'Vishal', phone: '9876543210', email: 'vks1234566@gmail.com'),
+    Contact(name: 'Divyanshu', phone: '8595126184', email: 'divyanshucloud@gmail.com'),
+  ];
+
+  void _deleteContact(Contact contact) {
+    setState(() {
+      contacts.remove(contact);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -187,12 +219,12 @@ class EmergencyContacts extends StatelessWidget {
                 fontWeight: FontWeight.bold,
                 color: Colors.pink[800])),
         SizedBox(height: 10),
-        ContactCard(
-            name: 'Vishal', phone: '9876543210', email: 'vks1234566@gmail.com'),
-        ContactCard(
-            name: 'Divyanshu',
-            phone: '8595126184',
-            email: 'divyanshucloud@gmail.com'),
+        ...contacts.map((contact) => ContactCard(
+              name: contact.name,
+              phone: contact.phone,
+              email: contact.email,
+              onDelete: () => _deleteContact(contact),
+            )).toList(),
       ],
     );
   }
@@ -202,9 +234,10 @@ class ContactCard extends StatelessWidget {
   final String name;
   final String phone;
   final String email;
+  final VoidCallback onDelete;
 
   const ContactCard(
-      {required this.name, required this.phone, required this.email});
+      {required this.name, required this.phone, required this.email, required this.onDelete});
 
   @override
   Widget build(BuildContext context) {
@@ -228,7 +261,10 @@ class ContactCard extends StatelessWidget {
               Text(email, style: TextStyle(color: Colors.white)),
             ],
           ),
-          Icon(Icons.delete, color: Colors.white),
+          IconButton(
+            icon: Icon(Icons.delete, color: Colors.white),
+            onPressed: onDelete,
+          ),
         ],
       ),
     );
